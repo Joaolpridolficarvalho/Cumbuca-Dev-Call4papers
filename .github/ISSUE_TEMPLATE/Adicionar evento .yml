@@ -43,7 +43,6 @@ body:
       placeholder: "ex: https://evento-online.com/"
     validations:
       required: false
-    if: "event_format == 'Remoto' || event_format == 'Híbrido'"
 
   - type: markdown
     attributes:
