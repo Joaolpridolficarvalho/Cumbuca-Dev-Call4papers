@@ -8,6 +8,7 @@ body:
       value: |
         # Solicitação de Remoção de Evento
 
+
   - type: input
     id: event_name
     attributes:
@@ -17,6 +18,7 @@ body:
     validations:
       required: true
 
+
   - type: textarea
     id: removal_reason
     attributes:
@@ -25,6 +27,7 @@ body:
       placeholder: "ex: O evento foi cancelado, informações duplicadas, etc."
     validations:
       required: true
+
 
   - type: input
     id: requester_contact

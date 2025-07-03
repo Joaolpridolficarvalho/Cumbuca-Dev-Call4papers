@@ -11,10 +11,12 @@ Este repositório foi criado pela comunidade Cumbuca para facilitar o acampanham
             <th>Data/Hora</th>
             <th>Local/Link</th>
             <th>Modelo&nbsp;</th>
+            <th>Descrição</th>
         </tr>
     </thead>
     <tbody>
         <tr>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
