@@ -1,13 +1,16 @@
-name: Adicionar evento
 
 on:
   issues:
     types: [opened]
 
+name: Adicionar evento
+
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   adicionar_evento:
-    if: |
-      github.event.issue.title == null || startsWith(github.event.issue.title, '(Atenção:')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repositório
@@ -32,7 +35,7 @@ jobs:
 
       - name: Adicionar evento ao banco de dados
         run: |
-          python .github/workflows/Add_evet.py
+          python .github/workflows/Add_event.py
         env:
           event_name: ${{ env.EVENT_NAME }}
           event_year: ${{ env.EVENT_YEAR }}
