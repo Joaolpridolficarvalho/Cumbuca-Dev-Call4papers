@@ -35,7 +35,7 @@ jobs:
 
       - name: Adicionar evento ao banco de dados
         run: |
-          python .github/workflows/Add_event.py
+                python .github/workflows/Add_event.py
         env:
           event_name: ${{ env.EVENT_NAME }}
           event_year: ${{ env.EVENT_YEAR }}
