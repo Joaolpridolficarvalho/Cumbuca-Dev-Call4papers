@@ -89,13 +89,10 @@ def add_tba_to_json(file_path, new_event):
 
 
 def get_event_from_env():
-    year_str = os.getenv("event_year", "").strip()
-    try:
-        year = int(year_str)
-    except ValueError:
-        year = 0
+    event_year_str = os.getenv("event_year", "0")
+    ano = int(event_year_str) if event_year_str.isdigit() else 0
     return {
-        "ano": year,
+        "ano": ano,
         "mes": os.getenv("event_month", "").strip().lower(),
         "evento": {
             "nome": os.getenv("event_name", "").strip(),
