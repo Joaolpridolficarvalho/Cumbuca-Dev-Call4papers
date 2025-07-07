@@ -1,15 +1,10 @@
+name: Adicionar evento (Agenda Tech Brasil)
 
-on:
+          git push
   issues:
     types: [opened]
 
-name: Adicionar evento
 
-permissions:
-  contents: write
-  issues: write
-
-jobs:
   adicionar_evento:
     runs-on: ubuntu-latest
     steps:
@@ -35,7 +30,7 @@ jobs:
 
       - name: Adicionar evento ao banco de dados
         run: |
-                python .github/workflows/Add_event.py
+          python .github/workflows/Add_evet.py
         env:
           event_name: ${{ env.EVENT_NAME }}
           event_year: ${{ env.EVENT_YEAR }}
@@ -53,3 +48,4 @@ jobs:
           git add db/database.json || true
           git commit -m "Adiciona evento automaticamente via issue" || exit 0
           git push
+          git config --global user.name "github-actions[bot]"

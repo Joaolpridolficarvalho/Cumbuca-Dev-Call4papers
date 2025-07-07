@@ -1,117 +1,33 @@
-import json
-import os
-
-CALENDAR_ORDER = [
-    "janeiro",
-    "fevereiro",
-    "março",
-    "abril",
-    "maio",
-    "junho",
-    "julho",
-    "agosto",
-    "setembro",
-    "outubro",
-    "novembro",
-    "dezembro",
-]
-
-def add_event_to_json(file_path, new_event):
-
-    with open(file_path, "r") as f:
+def update_readme(file_path, readme_path):
+    with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    if "eventos" not in data:
-        data["eventos"] = []
-    if "tba" not in data:
-        data["tba"] = []
+    lines = ["# 📅 Eventos Confirmados\n"]
 
-    year = new_event["ano"]
-    month = new_event["mes"]
+    for ano_entry in sorted(data["eventos"], key=lambda y: int(y["ano"])):
+        if ano_entry["arquivado"]:
+            continue
 
-    year_exist = next((y for y in data["eventos"] if y["ano"] == year), None)
-    if not year_exist:
-        year_exist = {"ano": year, "arquivado": False, "meses": []}
-        data["eventos"].append(year_exist)
+        lines.append(f"\n## {ano_entry['ano']}\n")
+        for mes_entry in ano_entry["meses"]:
+            if mes_entry["arquivado"]:
+                continue
 
-    month_exist = next((m for m in year_exist["meses"] if m["mes"] == month), None)
-    if not month_exist:
-        month_exist = {"mes": month, "arquivado": False, "eventos": []}
-        year_exist["meses"].append(month_exist)
+            lines.append(f"### {mes_entry['mes'].capitalize()}\n")
+            for evento in mes_entry["eventos"]:
+                dias = ", ".join(evento["data"])
+                lines.append(f"- **{evento['nome']}** – {dias} – {evento['cidade']}/{evento['uf']} – [{evento['tipo']}]({evento['url']})")
 
-    month_exist["eventos"].append(new_event["evento"])
+            lines.append("")  # linha em branco
 
-    year_exist["meses"] = sorted(
-        year_exist["meses"],
-        key=lambda m: CALENDAR_ORDER.index(m["mes"].lower())
-    )
+    # TBA
+    if data["tba"]:
+        lines.append("\n## 📌 Eventos a Definir (TBA)\n")
+        for evento in data["tba"]:
+            lines.append(f"- **{evento['nome']}** – {evento['cidade']}/{evento['uf']} – [{evento['tipo']}]({evento['url']})")
+        lines.append("")
 
-    month_exist["eventos"] = sorted(
-        month_exist["eventos"],
-        key=lambda e: (
-            min(map(int, e["data"])),
-            len(e["data"])
-        ),
-    )
+    with open(readme_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
-    data["eventos"] = sorted(data["eventos"], key=lambda y: int(y["ano"]))
-
-    with open(file_path, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"Evento adicionado e arquivo {file_path} atualizado com sucesso!")
-
-
-def add_tba_to_json(file_path, new_event):
-
-    with open(file_path, "r") as f:
-        data = json.load(f)
-
-    if "tba" not in data:
-        data["tba"] = []
-
-    for event in data["tba"]:
-        if event["nome"] == new_event["evento"]["nome"] and event["url"] == new_event["evento"]["url"] and event["cidade"] == new_event["evento"]["cidade"] and event["uf"] == new_event["evento"]["uf"] and event["tipo"] == new_event["evento"]["tipo"]:
-            print("Este evento já existe. Ignorando adição.")
-            return
-
-    event_tba = {
-        "nome": new_event["evento"]["nome"],
-        "url": new_event["evento"]["url"],
-        "cidade": new_event["evento"]["cidade"],
-        "uf": new_event["evento"]["uf"],
-        "tipo": new_event["evento"]["tipo"],
-    }
-
-    data["tba"].append(event_tba)
-    with open(file_path, "w") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-        print(f"Evento adicionado e arquivo {file_path} atualizado com sucesso!")
-
-
-def get_event_from_env():
-    event_year_str = os.getenv("event_year", "0")
-    ano = int(event_year_str) if event_year_str.isdigit() else 0
-    return {
-        "ano": ano,
-        "mes": os.getenv("event_month", "").strip().lower(),
-        "evento": {
-            "nome": os.getenv("event_name", "").strip(),
-            "data": sorted(os.getenv("event_day", "").strip().replace(" ", "").split(",")),
-            "url": os.getenv("event_url", "").strip(),
-            "cidade": os.getenv("event_city", "").strip().title(),
-            "uf": os.getenv("event_state", "").strip(),
-            "tipo": os.getenv("event_type", "").strip(),
-        },
-    }
-
-
-if __name__ == "__main__":
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, 'db', 'database.json')
-
-    new_event = get_event_from_env()
-    if new_event["mes"] == "tba":
-        add_tba_to_json(db_path, new_event)
-    else:
-        add_event_to_json(db_path, new_event)
+    print(f"README.md atualizado com sucesso.")
