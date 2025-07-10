@@ -1,42 +1,42 @@
-name: Remover evento
+name: Remove event
 
 on:
-  issues:
-    types: [opened]
+            issues:
+              types: [opened]
 
 jobs:
-  remover_evento:
-    if: |
-      github.event.issue.title == null || startsWith(github.event.issue.title, '(Atenção:')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repositório
-        uses: actions/checkout@v4
+            remove_event:
+              if: |
+                github.event.issue.title == null || startsWith(github.event.issue.title, '(Atenção:')
+              runs-on: ubuntu-latest
+              steps:
+                - name: Checkout repositório
+                  uses: actions/checkout@v4
 
-      - name: Instalar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+                - name: Install Python
+                  uses: actions/setup-python@v5
+                  with:
+                    python-version: '3.11'
 
-      - name: Extrair dados da issue
-        id: extract
-        run: |
-          echo "EVENT_NAME=$(jq -r '.issue.body' "$GITHUB_EVENT_PATH" | grep -A1 '### Nome do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_YEAR=$(jq -r '.issue.body' "$GITHUB_EVENT_PATH" | grep -A1 '### Ano do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_MONTH=$(jq -r '.issue.body' "$GITHUB_EVENT_PATH" | grep -A1 '### Mês do Evento' | tail -n1 | xargs | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+                - name: Extract issue data
+                  id: extract
+                  run: |
+                    echo "NOME_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 '### Nome do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+                    echo "ANO_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 '### Ano do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+                    echo "MES_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 '### Mês do Evento' | tail -n1 | xargs | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      - name: Remover evento do banco de dados
-        run: |
-          python .github/workflows/Remove_event.py
-        env:
-          event_name: ${{ env.EVENT_NAME }}
-          event_year: ${{ env.EVENT_YEAR }}
-          event_month: ${{ env.EVENT_MONTH }}
+                - name: Remove event from JSON
+                  run: |
+                    python .github/workflows/Remove_event.py
+                  env:
+                    nome_evento: ${{ env.NOME_EVENTO }}
+                    ano_evento: ${{ env.ANO_EVENTO }}
+                    mes_evento: ${{ env.MES_EVENTO }}
 
-      - name: Commit e push se houver mudanças
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add db/database.json || true
-          git commit -m "Remove evento automaticamente via issue" || exit 0
-          git push
+                - name: Commit and push if changes
+                  run: |
+                    git config --global user.name "github-actions[bot]"
+                    git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                    git add db/database.json || true
+                    git commit -m "Remove evento automaticamente via issue" || exit 0
+                    git push

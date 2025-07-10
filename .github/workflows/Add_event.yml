@@ -1,0 +1,26 @@
+name: Save Event to JSON
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  save_event:
+    if: contains(github.event.issue.labels.*.name, 'Add')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Save event to JSON
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python scripts/Add_event.py "$ISSUE_BODY"

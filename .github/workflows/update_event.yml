@@ -21,32 +21,32 @@ jobs:
       - name: Extract issue data
         id: extract
         run: |
-          echo "EVENT_NAME=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Nome do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_YEAR=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Ano do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_MONTH=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Mês do Evento' | tail -n1 | xargs | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "EVENT_DAY=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Dia do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_URL=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'URL do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_CITY=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Cidade' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_STATE=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'UF' | tail -n1 | xargs)" >> $GITHUB_ENV
-          echo "EVENT_TYPE=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Tipo' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "NOME_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Nome do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "ANO_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Ano do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "MES_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Mês do Evento' | tail -n1 | xargs | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "DIAS_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Dias do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "URL_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Site do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "CIDADE_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Cidade do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "ESTADO_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Estado do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
+          echo "TIPO_EVENTO=$(jq -r '.issue.body' \"$GITHUB_EVENT_PATH\" | grep -A1 'Tipo do Evento' | tail -n1 | xargs)" >> $GITHUB_ENV
 
       - name: Update event in database
         run: |
           python .github/workflows/Update_event.py
         env:
-          event_name: ${{ env.EVENT_NAME }}
-          event_year: ${{ env.EVENT_YEAR }}
-          event_month: ${{ env.EVENT_MONTH }}
-          event_day: ${{ env.EVENT_DAY }}
-          event_url: ${{ env.EVENT_URL }}
-          event_city: ${{ env.EVENT_CITY }}
-          event_state: ${{ env.EVENT_STATE }}
-          event_type: ${{ env.EVENT_TYPE }}
+          nome_evento: ${{ env.NOME_EVENTO }}
+          ano_evento: ${{ env.ANO_EVENTO }}
+          mes_evento: ${{ env.MES_EVENTO }}
+          dias_evento: ${{ env.DIAS_EVENTO }}
+          url_evento: ${{ env.URL_EVENTO }}
+          cidade_evento: ${{ env.CIDADE_EVENTO }}
+          estado_evento: ${{ env.ESTADO_EVENTO }}
+          tipo_evento: ${{ env.TIPO_EVENTO }}
 
-      - name: Commit and push if changes
+      - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add db/database.json || true
-          git commit -m "Automatically update event via issue" || exit 0
+          git commit -m "Atualização automática de evento via issue" || exit 0
           git push
